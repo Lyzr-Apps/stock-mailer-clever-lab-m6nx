@@ -623,6 +623,9 @@ export default function Page() {
   const [showSampleData, setShowSampleData] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [lastRefresh, setLastRefresh] = useState<string>('')
+  const [inlineEmail, setInlineEmail] = useState('')
+  const [inlineEmailError, setInlineEmailError] = useState('')
+  const [emailSaved, setEmailSaved] = useState(false)
 
   const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
@@ -633,12 +636,15 @@ export default function Page() {
       const savedPM = localStorage.getItem('sp_price_movements')
       const savedVD = localStorage.getItem('sp_volume_data')
       const savedTS = localStorage.getItem('sp_trend_signals')
+      const email = savedEmail ?? ''
       setSettings({
-        recipientEmail: savedEmail ?? '',
+        recipientEmail: email,
         priceMovements: savedPM !== null ? savedPM === 'true' : true,
         volumeData: savedVD !== null ? savedVD === 'true' : true,
         trendSignals: savedTS !== null ? savedTS === 'true' : true,
       })
+      setInlineEmail(email)
+      if (email) setEmailSaved(true)
     } catch {
       // localStorage may not be available
     }
@@ -730,6 +736,8 @@ export default function Page() {
   // Save settings
   function handleSaveSettings(newSettings: SettingsState) {
     setSettings(newSettings)
+    setInlineEmail(newSettings.recipientEmail)
+    if (newSettings.recipientEmail) setEmailSaved(true)
     try {
       localStorage.setItem('sp_recipient_email', newSettings.recipientEmail)
       localStorage.setItem('sp_price_movements', String(newSettings.priceMovements))
@@ -1011,9 +1019,91 @@ export default function Page() {
                 )}
               </button>
 
-              {!settings.recipientEmail && (
-                <p className="mt-2 text-xs text-[hsl(35,85%,55%)]">
-                  Set recipient email in Settings to receive reports.
+            </div>
+
+            {/* ---- Email Configuration Card ---- */}
+            <div className="p-4 rounded-sm bg-[hsl(220,22%,10%)] border border-[hsl(220,18%,18%)]">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-[hsl(220,12%,55%)]">Email Recipient</h3>
+                {settings.recipientEmail && emailSaved && (
+                  <span className="flex items-center gap-1 text-xs text-[hsl(160,70%,45%)]">
+                    <FiCheckCircle className="w-3 h-3" />
+                    Saved
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-[hsl(220,12%,55%)] mb-2">
+                Analysis reports will be sent to this email address automatically.
+              </p>
+              <div className="flex gap-2">
+                <div className="flex-1 relative">
+                  <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                    <FiMail className="w-3.5 h-3.5 text-[hsl(220,12%,55%)]" />
+                  </div>
+                  <input
+                    type="email"
+                    value={inlineEmail}
+                    onChange={(e) => {
+                      setInlineEmail(e.target.value)
+                      setInlineEmailError('')
+                      setEmailSaved(false)
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        const val = inlineEmail.trim()
+                        if (!val) {
+                          setInlineEmailError('Email is required')
+                          return
+                        }
+                        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+                          setInlineEmailError('Enter a valid email')
+                          return
+                        }
+                        setSettings((prev) => ({ ...prev, recipientEmail: val }))
+                        try {
+                          localStorage.setItem('sp_recipient_email', val)
+                        } catch {}
+                        setEmailSaved(true)
+                      }
+                    }}
+                    placeholder="your@email.com"
+                    className="w-full pl-8 pr-3 py-2 text-sm rounded-sm bg-[hsl(220,15%,24%)] border border-[hsl(220,18%,18%)] text-[hsl(220,15%,85%)] placeholder:text-[hsl(220,12%,55%)]/50 focus:outline-none focus:border-[hsl(220,80%,55%)] transition-colors"
+                  />
+                </div>
+                <button
+                  onClick={() => {
+                    const val = inlineEmail.trim()
+                    if (!val) {
+                      setInlineEmailError('Email is required')
+                      return
+                    }
+                    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+                      setInlineEmailError('Enter a valid email')
+                      return
+                    }
+                    setSettings((prev) => ({ ...prev, recipientEmail: val }))
+                    try {
+                      localStorage.setItem('sp_recipient_email', val)
+                    } catch {}
+                    setEmailSaved(true)
+                    setInlineEmailError('')
+                  }}
+                  className="px-3 py-2 text-sm font-medium rounded-sm bg-[hsl(220,80%,55%)] text-white hover:bg-[hsl(220,80%,50%)] transition-colors flex items-center gap-1.5"
+                >
+                  <FiSend className="w-3.5 h-3.5" />
+                  <span>Save</span>
+                </button>
+              </div>
+              {inlineEmailError && (
+                <p className="mt-1.5 text-xs text-[hsl(0,75%,55%)] flex items-center gap-1">
+                  <FiAlertCircle className="w-3 h-3" />
+                  {inlineEmailError}
+                </p>
+              )}
+              {!settings.recipientEmail && !inlineEmailError && (
+                <p className="mt-1.5 text-xs text-[hsl(35,85%,55%)] flex items-center gap-1">
+                  <FiAlertCircle className="w-3 h-3" />
+                  Required for automated email reports
                 </p>
               )}
             </div>
