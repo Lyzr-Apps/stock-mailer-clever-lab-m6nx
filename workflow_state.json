@@ -1,0 +1,50 @@
+{
+  "app_name": "StockPulse",
+  "agent_ids": [
+    "6992e2ab9faaf40e52dbfe75",
+    "6992e27c9e5233405ac5138f",
+    "6992e29855d492b23db45a9b"
+  ],
+  "manager_agent_id": "6992e2ab9faaf40e52dbfe75",
+  "sub_agent_ids": [
+    "6992e27c9e5233405ac5138f",
+    "6992e29855d492b23db45a9b"
+  ],
+  "agents": {
+    "stock_analysis_coordinator": {
+      "agent_id": "6992e2ab9faaf40e52dbfe75",
+      "name": "Stock Analysis Coordinator",
+      "type": "manager",
+      "provider": "openai",
+      "model": "gpt-4o"
+    },
+    "stock_research_agent": {
+      "agent_id": "6992e27c9e5233405ac5138f",
+      "name": "Stock Research Agent",
+      "type": "sub-agent",
+      "provider": "perplexity",
+      "model": "sonar-reasoning-pro"
+    },
+    "email_report_agent": {
+      "agent_id": "6992e29855d492b23db45a9b",
+      "name": "Email Report Agent",
+      "type": "sub-agent",
+      "provider": "openai",
+      "model": "gpt-4o"
+    }
+  },
+  "schedule_ids": ["6992e2b1399dfadeac37728d"],
+  "schedules": {
+    "meta_analysis_every_5_min": {
+      "schedule_id": "6992e2b1399dfadeac37728d",
+      "agent_id": "6992e2ab9faaf40e52dbfe75",
+      "cron_expression": "*/5 * * * *",
+      "timezone": "UTC",
+      "is_active": true
+    }
+  },
+  "tools_used": ["GMAIL_SEND_EMAIL"],
+  "has_scheduler": true,
+  "has_composio_tool": true,
+  "composio_tools": ["GMAIL_SEND_EMAIL"]
+}

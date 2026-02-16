@@ -1,0 +1,16 @@
+{
+  "agent_name": "Email Report Agent",
+  "agent_id": "6992e29855d492b23db45a9b",
+  "agent_type": "json",
+  "accessor": "json",
+  "has_module_outputs": false,
+  "response_schema": {
+    "email_sent": "string",
+    "recipient": "string",
+    "subject": "string",
+    "price_snapshot": "string",
+    "trend_direction": "string",
+    "delivery_status": "string",
+    "timestamp": "string"
+  }
+}

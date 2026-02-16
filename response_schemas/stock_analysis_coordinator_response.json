@@ -1,0 +1,26 @@
+{
+  "agent_name": "Stock Analysis Coordinator",
+  "agent_id": "6992e2ab9faaf40e52dbfe75",
+  "agent_type": "json",
+  "accessor": "json",
+  "has_module_outputs": false,
+  "is_manager": true,
+  "managed_agents": ["6992e27c9e5233405ac5138f", "6992e29855d492b23db45a9b"],
+  "response_schema": {
+    "analysis_complete": "string",
+    "current_price": "string",
+    "price_change": "string",
+    "price_change_percent": "string",
+    "volume": "string",
+    "trend_direction": "string",
+    "key_signals": "string",
+    "news_summary": "string",
+    "support_level": "string",
+    "resistance_level": "string",
+    "analysis_summary": "string",
+    "email_sent": "string",
+    "email_recipient": "string",
+    "delivery_status": "string",
+    "timestamp": "string"
+  }
+}

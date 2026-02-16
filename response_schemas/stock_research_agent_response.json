@@ -1,0 +1,20 @@
+{
+  "agent_name": "Stock Research Agent",
+  "agent_id": "6992e27c9e5233405ac5138f",
+  "agent_type": "json",
+  "accessor": "json",
+  "has_module_outputs": false,
+  "response_schema": {
+    "current_price": "string",
+    "price_change": "string",
+    "price_change_percent": "string",
+    "volume": "string",
+    "trend_direction": "string",
+    "key_signals": "string",
+    "news_summary": "string",
+    "support_level": "string",
+    "resistance_level": "string",
+    "analysis_summary": "string",
+    "timestamp": "string"
+  }
+}

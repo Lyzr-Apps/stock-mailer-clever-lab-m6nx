@@ -1,0 +1,140 @@
+{
+  "name": "StockPulse",
+  "description": "META stock analysis with automated email alerts every 5 minutes using a Manager-Subagent pattern with scheduler",
+  "nodes": [
+    {
+      "id": "input_node",
+      "type": "Input",
+      "label": "Scheduler / Manual Trigger",
+      "nodeCategory": "input"
+    },
+    {
+      "id": "manager_agent",
+      "type": "Agent",
+      "label": "Stock Analysis Coordinator",
+      "nodeCategory": "agent",
+      "agent_id": "6992e2ab9faaf40e52dbfe75",
+      "agent_name": "Stock Analysis Coordinator",
+      "agent_type": "manager",
+      "provider": "openai",
+      "model": "gpt-4o",
+      "temperature": 0.3,
+      "top_p": 1,
+      "managed_agents": [
+        "6992e27c9e5233405ac5138f",
+        "6992e29855d492b23db45a9b"
+      ]
+    },
+    {
+      "id": "research_agent",
+      "type": "Agent",
+      "label": "Stock Research Agent",
+      "nodeCategory": "agent",
+      "agent_id": "6992e27c9e5233405ac5138f",
+      "agent_name": "Stock Research Agent",
+      "agent_type": "sub-agent",
+      "provider": "perplexity",
+      "model": "sonar-reasoning-pro",
+      "temperature": 0.2,
+      "top_p": 1
+    },
+    {
+      "id": "email_agent",
+      "type": "Agent",
+      "label": "Email Report Agent",
+      "nodeCategory": "agent",
+      "agent_id": "6992e29855d492b23db45a9b",
+      "agent_name": "Email Report Agent",
+      "agent_type": "sub-agent",
+      "provider": "openai",
+      "model": "gpt-4o",
+      "temperature": 0.3,
+      "top_p": 1,
+      "tools": ["GMAIL_SEND_EMAIL"]
+    },
+    {
+      "id": "scheduler_node",
+      "type": "Conditional",
+      "label": "Scheduled: Every 5 Minutes",
+      "nodeCategory": "conditional",
+      "schedule_id": "6992e2b1399dfadeac37728d",
+      "cron_expression": "*/5 * * * *",
+      "timezone": "UTC"
+    },
+    {
+      "id": "output_node",
+      "type": "Output",
+      "label": "Analysis Complete",
+      "nodeCategory": "end"
+    }
+  ],
+  "edges": [
+    { "source": "input_node", "target": "manager_agent" },
+    { "source": "scheduler_node", "target": "manager_agent" },
+    { "source": "manager_agent", "target": "research_agent" },
+    { "source": "manager_agent", "target": "email_agent" },
+    { "source": "email_agent", "target": "output_node" }
+  ],
+  "agents": [
+    {
+      "agent_id": "6992e2ab9faaf40e52dbfe75",
+      "name": "Stock Analysis Coordinator",
+      "type": "manager",
+      "provider": "openai",
+      "model": "gpt-4o",
+      "temperature": 0.3,
+      "top_p": 1,
+      "managed_agents": ["6992e27c9e5233405ac5138f", "6992e29855d492b23db45a9b"],
+      "tools": [],
+      "image_output_config": null,
+      "voice_config": null,
+      "file_output": false
+    },
+    {
+      "agent_id": "6992e27c9e5233405ac5138f",
+      "name": "Stock Research Agent",
+      "type": "sub-agent",
+      "provider": "perplexity",
+      "model": "sonar-reasoning-pro",
+      "temperature": 0.2,
+      "top_p": 1,
+      "managed_agents": [],
+      "tools": [],
+      "image_output_config": null,
+      "voice_config": null,
+      "file_output": false
+    },
+    {
+      "agent_id": "6992e29855d492b23db45a9b",
+      "name": "Email Report Agent",
+      "type": "sub-agent",
+      "provider": "openai",
+      "model": "gpt-4o",
+      "temperature": 0.3,
+      "top_p": 1,
+      "managed_agents": [],
+      "tools": ["GMAIL_SEND_EMAIL"],
+      "tool_configs": [
+        {
+          "tool_name": "gmail",
+          "tool_source": "composio",
+          "action_names": ["GMAIL_SEND_EMAIL"],
+          "persist_auth": true
+        }
+      ],
+      "image_output_config": null,
+      "voice_config": null,
+      "file_output": false
+    }
+  ],
+  "schedule": {
+    "schedule_id": "6992e2b1399dfadeac37728d",
+    "agent_id": "6992e2ab9faaf40e52dbfe75",
+    "cron_expression": "*/5 * * * *",
+    "timezone": "UTC",
+    "message": "Run the META stock analysis pipeline. Fetch current real-time data for Facebook/Meta Platforms (META) stock and send the analysis report via email to the configured recipient.",
+    "max_retries": 2,
+    "retry_delay": 30,
+    "is_active": true
+  }
+}
